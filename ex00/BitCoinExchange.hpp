@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 15:18:09 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/12/03 12:04:42 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/12/03 15:59:50 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -16,6 +16,7 @@
 #include <vector>
 #include <ctime>
 #include <algorithm>
+#include <cstring>
 
 #ifndef BITCOINEXCHANGE_HPP
 #define BITCOINEXCHANGE_HPP
@@ -30,7 +31,7 @@ struct tmCompare {
 };
 
 std::tm	collectTm(std::string const & line);
-float	collectValue(std::string const & line);
+float	collectValue(std::string const & line, int i);
 bool	compareDate(tm const & date);
 
 class	BitCoinExchange {
@@ -43,7 +44,7 @@ class	BitCoinExchange {
 		BitCoinExchange();
 		BitCoinExchange(BitCoinExchange const & src);
 		BitCoinExchange &	operator=(BitCoinExchange const & src);
-		~BitCoinExchange() {}
+		~BitCoinExchange();
 		void	addLine(std::string & line);
 		bool	checkDate();
 		bool	checkNumber();
@@ -54,7 +55,7 @@ class	BitCoinExchange {
 			std::string	_message;
 			public:
 				BtcException(std::string const & message) : _message(message) {}
-				virtual ~BtcException() {}
+				virtual ~BtcException()  throw() {}
 				virtual const char*	what() const throw() {
 					return _message.c_str();
 				}
