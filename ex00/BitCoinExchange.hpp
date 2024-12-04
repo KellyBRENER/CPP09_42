@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 15:18:09 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/12/04 10:53:46 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/12/04 14:35:44 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -32,8 +32,9 @@ struct tmCompare {
 
 std::tm	collectTm(std::string const & line);
 float	collectValue(std::string const & line, int i);
-bool	compareDate(tm const & date);
+bool	compareDate(std::tm min_date, tm const & date);
 bool	is_title(std::string const & line);
+std::string printTime(std::tm timeStruct);
 
 class	BitCoinExchange {
 	private:
@@ -47,8 +48,8 @@ class	BitCoinExchange {
 		BitCoinExchange &	operator=(BitCoinExchange const & src);
 		~BitCoinExchange();
 		void	addLine(std::string & line);
-		bool	checkDate();
-		bool	checkNumber();
+		bool	checkDate(std::tm const & min_date);
+		bool	checkNumber(std::string const & line);
 		bool	checkFormat();
 		void	calculChange();
 		class	BtcException : public std::exception {

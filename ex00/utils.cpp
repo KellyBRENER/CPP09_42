@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 11:53:52 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/12/04 10:55:18 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/12/04 11:56:15 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -38,16 +38,18 @@ float	collectValue(std::string const & line, int i) {
 	return value;
 }
 
-bool	compareDate(tm const & date) {
+bool	compareDate(std::tm min_date, tm const & date) {
 	time_t	today = time(0);//recupere la date d'aujourd'hui
-	tm	min_date;
-	std::memset(&min_date, 0, sizeof(min_date));
-	min_date.tm_year = 2009 - 1900;//2009
-	min_date.tm_mon = 0;//janvier
-	min_date.tm_mday = 2;//2
 	time_t	min_time = mktime(const_cast<tm*>(&min_date));
 	time_t	time_to_compare = mktime(const_cast<tm*>(&date));
 	if (time_to_compare > min_time && time_to_compare < today)
 		return true;
 	return false;
+}
+
+std::string printTime(std::tm timeStruct) {
+	char buffer[80];
+
+	std::strftime(buffer, sizeof(buffer), "%Y-%m-%d", &timeStruct);
+	return std::string(buffer);
 }

@@ -6,23 +6,29 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 11:25:23 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/12/04 10:50:12 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/12/04 15:14:31 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
 #include "BitCoinExchange.hpp"
 
 BitCoinExchange::BitCoinExchange() {
-	std::ifstream	infile("data.csv");
+	std::ifstream	infile("input.csv");
 	if (!infile.is_open())
 		throw BtcException("data.csv opening failed");
-	int i = 0;
 	while (std::getline(infile, _current_line)) {
-		if (i == 0)
-			i++;
-		else
-			_tab_ref[collectTm(_current_line)] = collectValue(_current_line, 11);
+		if (!is_title(_current_line) && checkDate(collectTm("1900-01-02"))) {
+			for (size_t i = 10; i < _current_line.size(); ++i) {
+				if (std::isdigit(_current_line[i]) && checkNumber(_current_line.substr(i, _current_line.size() - i))) {
+					_tab_ref[_current_date] = _current_value;
+					break;
+				}
+			}
+		}
 	}
+	// std::map<std::tm, float>::iterator	it;
+	// for (it = _tab_ref.begin(); it != _tab_ref.end(); ++it)
+	// 	std::cout<<printTime(it->first)<<" = "<<it->second<<std::endl;
 }
 
 BitCoinExchange::BitCoinExchange(BitCoinExchange const & src) {
@@ -45,7 +51,7 @@ void	BitCoinExchange::addLine(std::string & line) {
 			_current_line = line;
 		}
 
-bool	BitCoinExchange::checkDate() {
+bool	BitCoinExchange::checkDate(std::tm const & min_date) {
 	for (int i = 0; i < 10; ++i) {
 		if (((i < 4 || i == 5 || i == 6 || i == 8 || i == 9) && !std::isdigit(_current_line[i]))
 		|| ((i == 4 || i == 7) && _current_line[i] != '-')) {
@@ -55,8 +61,8 @@ bool	BitCoinExchange::checkDate() {
 	}
 	int year = std::atoi(_current_line.substr(0, 4).c_str());
 	/*range à définir*/
-	if (year < 2009 || year > 2024) {
-		std::cerr<<"Error: bad input => "<<_current_line.substr(0, 10)<<", the date must be between 2009-01-02 and today"<<std::endl;
+	if (year > 2024) {
+		std::cerr<<"Error: bad input => "<<_current_line.substr(0, 10)<<std::endl;
 		return false;
 	}
 	int month = std::atoi(_current_line.substr(5, 2).c_str());
@@ -71,50 +77,45 @@ bool	BitCoinExchange::checkDate() {
 		return false;
 	}
 	/*date value*/
-	std::tm	date_to_compare = collectTm(_current_line);
-	if (!compareDate(date_to_compare)) {
-		std::cerr<<"Error: wrong date, the date must be between 2009-01-02 and today"<<std::endl;
+	_current_date = collectTm(_current_line);
+	if (!compareDate(min_date, _current_date)) {
+		std::cerr<<"Error: wrong date, the date must be between "<<printTime(_tab_ref.begin()->first)<<" and today"<<std::endl;
 		return false;
 	}
-	_current_date = date_to_compare;
+
 	return true;
 }
 
-bool	BitCoinExchange::checkNumber() {
-	int size;
-	if (_current_line.size() > 22) {
+bool	BitCoinExchange::checkNumber(std::string const & line) {
+	if (line.size() > 8) {
 		std::cerr<<"Error: too large a number."<<std::endl;
 		return false;
 	}
-	size = _current_line.size();
-	for (int i = 13; i < size; ++i)//int ou float entre 0 et 1000, un float = 7 chiffre maxi
+	size_t size = line.size();
+	for (size_t i = 0; i < size; ++i)//int ou float entre 0 et 1000, un float = 7 chiffre maxi
 	{
-		if (!std::isdigit(_current_line[i])) {
-			if (_current_line[i] == '-' && i == 13) {
+		if (!std::isdigit(line[i])) {
+			if (line[i] == '-' && i == 0) {
 				std::cerr<<"Error: not a positive number."<<std::endl;
 				return false;
 			}
-			else if ((_current_line[i] == '.' &&
-			(i == 13 || i == 20 || !std::isdigit(_current_line[i + 1]))) ||
-			_current_line[i] != '.') {
-				std::cerr<<"Error: bad input => "<<_current_line.substr(13, _current_line.size() - 13)<<std::endl;
+			else if ((line[i] == '.' &&
+			(i == 0 || i == line.size() - 1 || !std::isdigit(line[i + 1]))) ||
+			line[i] != '.') {
+				std::cerr<<"Error: bad input => "<<line<<std::endl;
 				return false;
 			}
 		}
 	}
-	float	value = std::atof(_current_line.substr(13, 7).c_str());
-	if (value > 1000) {
-		std::cerr<<"Error: too large a number."<<std::endl;
-		return false;
-	}
+	float	value = std::atof(line.c_str());
 	_current_value = value;
 	return true;
 }
 
 bool	BitCoinExchange::checkFormat() {
-	if (!is_title(_current_line) && checkDate()) {
+	if (!is_title(_current_line) && checkDate(_tab_ref.begin()->first)) {
 		if (_current_line.compare(10, 3, " | ") == 0) {
-			if (checkNumber())
+			if (checkNumber(_current_line.substr(13,_current_line.size() - 13)))
 				return true;
 		}
 		else
@@ -126,10 +127,15 @@ bool	BitCoinExchange::checkFormat() {
 void	BitCoinExchange::calculChange() {
 	std::map<std::tm, float, tmCompare>::iterator	it;
 	it = _tab_ref.find(_current_date);
-	if (it == _tab_ref.end())//on a trouvé la date exacte dans tab
+	if (it == _tab_ref.end())//on a pas trouvé la date exacte dans tab
 	{
 		it = _tab_ref.lower_bound(_current_date);
 		it--;
 	}
+	if (_current_value > 1000) {
+		std::cerr<<"Error: too large a number."<<std::endl;
+		return;
+	}
 	std::cout<<_current_line.substr(0, 10)<<" => "<<_current_value<<" = "<<_current_value * it->second<<std::endl;
 }
+
