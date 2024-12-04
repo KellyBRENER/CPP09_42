@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 11:25:23 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/12/03 16:20:21 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/12/04 10:37:31 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -21,8 +21,9 @@ BitCoinExchange::BitCoinExchange() {
 		if (i == 0)
 			i++;
 		else
-			_tab_ref[collectTm(_current_line)] = collectValue(_current_line, 11);
+			_tab_ref[_current_line.substr(0, 10)] = collectValue(_current_line, 11);
 	}
+	//print_map(_tab_ref);
 }
 
 BitCoinExchange::BitCoinExchange(BitCoinExchange const & src) {
@@ -56,7 +57,7 @@ bool	BitCoinExchange::checkDate() {
 	int year = std::atoi(_current_line.substr(0, 4).c_str());
 	/*range à définir*/
 	if (year < 2009 || year > 2024) {
-		std::cerr<<"Error: wrong date, the date must be between 2009-01-02 and today"<<std::endl;
+		std::cerr<<"Error: bad input => "<<_current_line.substr(0, 10)<<", the date must be between 2009-01-02 and today"<<std::endl;
 		return false;
 	}
 	int month = std::atoi(_current_line.substr(5, 2).c_str());
@@ -71,12 +72,12 @@ bool	BitCoinExchange::checkDate() {
 		return false;
 	}
 	/*date value*/
-	std::tm	date_to_compare = collectTm(_current_line);
-	if (!compareDate(date_to_compare)) {
-		std::cerr<<"Error: wrong date, the date must be between 2009-01-02 and today"<<std::endl;
-		return false;
-	}
-	_current_date = date_to_compare;
+	// std::tm	date_to_compare = collectTm(_current_line);
+	// if (!compareDate(date_to_compare)) {
+	// 	std::cerr<<"Error: wrong date, the date must be between 2009-01-02 and today"<<std::endl;
+	// 	return false;
+	// }
+	_current_date = _current_line.substr(0, 10);
 	return true;
 }
 
@@ -124,14 +125,12 @@ bool	BitCoinExchange::checkFormat() {
 }
 
 void	BitCoinExchange::calculChange() {
-	std::map<std::tm, float, tmCompare>::iterator	it;
+	std::map<std::string, float>::iterator	it;
 	it = _tab_ref.find(_current_date);
-	float	change;
-	if (it != _tab_ref.end())//on a trouvé la date exacte dans tab
-		change = it->second * _current_value;
-	else {
+	if (it == _tab_ref.end())//on a trouvé la date exacte dans tab
+	{
 		it = _tab_ref.lower_bound(_current_date);
 		it--;
 	}
-	std::cout<<_current_line.substr(0, 10)<<" => "<<_current_value<<" = "<<change<<std::endl;
+	std::cout<<_current_line.substr(0, 10)<<" => "<<_current_value<<" = "<<_current_value * it->second<<std::endl;
 }
