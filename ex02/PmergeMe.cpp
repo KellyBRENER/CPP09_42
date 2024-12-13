@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 11:33:01 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/12/13 12:31:26 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/12/13 12:50:15 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -14,8 +14,8 @@
 
 PmergeMe::PmergeMe() {}
 PmergeMe::PmergeMe(int argc, char** argv) {
-	_list_array = list_parsing(argc, argv);
-	_vector_array = vector_parsing(argc, argv);
+	_list_array = parsing<std::list<int>>(argc, argv);
+	_vector_array = parsing<std::vector<int>>(argc, argv);
 }
 PmergeMe::PmergeMe(const PmergeMe & src) {*this = src;}
 PmergeMe &	PmergeMe::operator=(const PmergeMe & src) {
@@ -26,6 +26,10 @@ PmergeMe &	PmergeMe::operator=(const PmergeMe & src) {
 	return *this;
 }
 PmergeMe::~PmergeMe() {}
+
+std::list<int> &	PmergeMe::getList() const {return _list_array;}
+
+std::vector<int> &	PmergeMe::getVector() const {return _vector_array;}
 
 std::list<int>	PmergeMe::list_dispatch(std::list<int> & array) {
 	int lenght = array.size();
@@ -106,41 +110,5 @@ std::vector<int>	PmergeMe::vector_merge_sort(std::vector<int> & left_array, std:
 		array[i++] = right_array[r++];
 	while (l < left_array.size())
 		array[i++] = left_array[l++];
-	return array;
-}
-
-/*parsing : only positif integer*/
-std::vector<int>	PmergeMe::vector_parsing(int argc, char **argv) {
-	std::vector<int>	array(0);
-	if (argc < 3) {
-		std::cerr<<"you have to give at least two numbers to sort"<<std::endl;
-		array.erase(array.begin(), array.end());
-		return array;
-	}
-	int i = 1;
-	int	nb;
-	while (i < argc)
-	{
-		for (int j = 0; argv[i][j]; ++j) {
-			if (!std::isdigit(argv[i][j])) {
-				std::cerr<<"only unsigned int are allowed"<<std::endl;
-				array.erase(array.begin(), array.end());
-				return array;
-			}
-		}
-		nb = ft_atoi(argv[i]);
-		if (nb == -1) {
-			std::cerr<<"only positive number are allowed"<<std::endl;
-			array.erase(array.begin(), array.end());
-			return array;
-		}
-		if (std::find(array.begin(), array.end(), nb) != array.end()) {
-			std::cerr<<"no duplicate are allowed"<<std::endl;
-			array.erase(array.begin(), array.end());
-			return array;
-	}
-		array.push_back(nb);
-		i++;
-	}
 	return array;
 }
