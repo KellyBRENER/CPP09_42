@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 14:39:04 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/12/12 17:19:11 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/12/13 11:22:27 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -103,32 +103,6 @@ std::vector<unsigned int>	sort(std::vector<unsigned int> array) {
 }
 
 int	main(int argc, char **argv) {
-//une séquence d'entiers positif en argument
-//utiliser l'algorithme de tri "merge-insert" pour trier les nombres
-//algorithme ford-johnson
-//utiliser au moins deux conteneurs
-// gérer au moins 3000 entiers différents
-//implémenter l'algorithme pour chaque conteneur
-/*
-résultats :
-1ere ligne : texte explicite + séquences d'entiers positifs non triés
-2eme ligne : texte explicite + séquence d'entiers triés
-3eme ligne : texte explicite + temps utilisé par l'algo + conteneur utilisé
-4eme ligne : idem pour le 2ème conteneur
-
-pour tester le programme :
-> ./PmergeMe `shuf -i 1-100000 -n 3000 | tr "\n" " "`
-permet de générer 3000 entiers pouvant aller de 1 à 100 000
-*/
-//on va séparer les nombres en paires de nombres
-//on va trier chaque paire
-//merger 2 paires
-//comparer les plus petits de chaque paire pour sélectionner le + petit
-//comparer le + grand de la 1ere paire avec le plsu petit de la seconde pour sélectionner le + petit
-//puis comparer les deux derniers pour sélectionner le + petit puis le + grand
-//puis comparer 2 paires merges avec 2 paires merges
-//à chaque fois, on part des deux plus petits de chaque liste et on place le + petit dans une nouvelle liste
-//puis on prends à nouveau les 2 plus petits et on sort le + petit des deux etc...
 	std::vector<unsigned int>	array = parsing(argc, argv);//vector ou list
 	if (array.empty())
 		return 1;
