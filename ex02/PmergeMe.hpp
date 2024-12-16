@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 14:39:22 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/12/16 10:55:03 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/12/16 11:47:46 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ class	PmergeMe {
 	PmergeMe(const PmergeMe & src);
 	PmergeMe &	operator=(const PmergeMe & src);
 	~PmergeMe();
+	
 	std::list<int>	getList() const;
 	std::vector<int>	getVector() const;
 	std::list<int>	list_dispatch(std::list<int> array);
